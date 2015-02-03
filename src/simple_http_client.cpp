@@ -26,6 +26,7 @@ int main(int argc, const char *argv[]) {
 	try {
 		using namespace boost::asio;
 		using namespace boost::asio::ip;
+		using boost::asio::streambuf;
 
 		io_service communication_service;
 		auto server = tcp::resolver(communication_service).resolve(
@@ -33,14 +34,14 @@ int main(int argc, const char *argv[]) {
 
 		tcp::socket connection(communication_service);
 		connect(connection, server);
-		boost::asio::streambuf request;
-		std::ostream request_stream(&request);
+		streambuf request;
+		ostream request_stream(&request);
 		request_stream << "GET " << path << " HTTP/1.0\r\n";
 		request_stream << "Host: " << host << "\r\n";
 		request_stream << "Accept: */*\r\n";
 		request_stream << "Connection: close\r\n\r\n";
 		write(connection, request);
-		boost::asio::streambuf response;
+		streambuf response;
 		read_until(connection, response, "\r\n");
 
 		cout << &response << endl;
